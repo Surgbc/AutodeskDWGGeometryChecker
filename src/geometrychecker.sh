@@ -86,7 +86,7 @@ createbucket()
 uploadfile()
 {
 	echo "Require file and filename to upload"
-	filename="METEOR SUBDIVISION PLAN 1.dwg"
+	filename="visualization_-_aerial.dwg"
 	folder="../dwgfiles/"
 	uploadfile=$folder$filename
 	filename=$(echo $filename|sed 's/ //g')
@@ -240,8 +240,8 @@ getJobStatus()
 		echo $result
 		exit;;	
 	"success");;
-	"inprogress")
-	"pending")
+	# "inprogress");;
+	"pending|inprogress")
 		#verifyjobComplete
 		echo "Job processing... Will wait for 10 secs"
 		sleep 10
@@ -259,6 +259,83 @@ getJobStatus()
 		
 	esac
 }
+
+
+getguidbac()
+{
+	if [ "$tresult" = "" ]
+	then
+		tresult=$result
+	fi
+	line=$(echo $tresult|sed 's/,[^\n]*//')
+	status=$(echo $line|grep guid)
+	if [ "$status" = "" ]
+	then
+		tresult=$(echo $tresult|sed 's/,/\n\r/')	
+		getJobStatusString
+	fi	
+		status=$(echo $status|sed 's/ //g')	
+		status=$(echo $status|sed 's/[^ :]*://')	
+		guidstring=$(echo $status|sed 's/"//g')
+}
+
+getguid()
+{
+	
+	if [ "$tresult" = "" ]
+	then
+		tresult=$result
+	fi
+
+	line=$(echo $tresult|sed 's/,[^\n]*//')
+	guidstring=$(echo $line|grep guid)
+	#echo $status
+	if [ "$guidstring" = "" ]
+	then
+		tresult=$(echo $tresult|sed 's/[^,]*,//')	
+		echo $tresult
+		getguid
+	else
+		#echo $guidstring
+		#echo $guidstring>/tmp/guidstring
+		#exit
+		guidstring=$(echo $guidstring|sed 's/:"/\n\r/g')
+		#echo $guidstring>/tmp/guidstring
+		guidstring=$(echo $guidstring|sed 's/"[^ ]*//g')
+		guidstring=$(echo $guidstring|sed 's/[\n\r]*//g')
+	#	echo $guidstring>/tmp/guidstring
+	#	guidstring=""
+	#	exit
+	#	status=$(echo $status|sed 's/"/\n\r/g')
+		#status=$(echo $status|sed 's/}[]/\n\r/g')
+		#echo "After replacing"
+		
+	fi	
+}
+
+
+modelViewIDS()
+{
+	result=$(curl \
+	-X "GET" \
+	-H "Authorization: Bearer $accesstoken" \
+	-v "https://developer.api.autodesk.com/modelderivative/v2/designdata/$base64objectid/metadata")
+	echo $result
+	#exit
+	#Assume good results
+}
+
+
+getobjectTree()
+{
+	getguid
+	result=$(curl \
+	-X "GET" \
+	-H "Authorization: Bearer $accesstoken" \
+	-v "https://developer.api.autodesk.com/modelderivative/v2/designdata/$base64objectid/metadata/$guidstring")
+	#Assume good results
+	echo "https://developer.api.autodesk.com/modelderivative/v2/designdata/$base64objectid/metadata/$guidstring"
+}
 	
 #
 ##main
@@ -270,11 +347,25 @@ main()
 	getCredentials
 	oauth
 	createbucket
-	uploadfile
-	getobjid
-	sourceFiletoSVF
-	verifyjobComplete
-	getJobStatus
+	#uploadfile #already uploaded 
+	#getobjid	#we have this already
+	#sourceFiletoSVF
+	#verifyjobComplete
+	# convert using node client
+	#getJobStatus
+	#https://developer.api.autodesk.com/modelderivative/v2/designdata/dXJuOmFkc2sub2JqZWN0czpvcy5vYmplY3Q6dG1wLWJ1Y2tldC92aXN1YWxpemF0aW9uXy1fYWVyaWFsLmR3Zw==/metadata
+
+	base64objectid="dXJuOmFkc2sub2JqZWN0czpvcy5vYmplY3Q6dG1wLWJ1Y2tldC9IU0NSRU4uRFdH"
+	echo "modelViewIDs"
+	#sleep 5
+	modelViewIDS
+	echo "object Tree"
+	#echo $result
+	#exit
+	#sleep 5
+	guidstring=""
+	getobjectTree ########
+	echo $result
 	#echo $base64objectid
 }
 

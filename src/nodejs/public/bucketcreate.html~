@@ -1,0 +1,16 @@
+<div class="container">
+      <form class="form-signin" name="form2" method="post">
+        <h2 class="form-signin-heading">Create Bucket</h2>
+        <input name="myusername" id="myusername" type="text" class="form-control" placeholder="Bucket-Name" autofocus>
+        <input name="Submit" id="submit" type="button" class="btn btn-lg btn-primary btn-block" value ="Create" >
+        <div id="message"></div>
+      </form>
+
+</div> <!-- /container -->
+
+<script>
+$("#submit").click(function(){
+	var bucketname = $("#myusername").val();
+	oauth(myusername, mypassword);
+});
+</script>
