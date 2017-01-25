@@ -155,7 +155,7 @@ app.get('/translate', function (req, res) {
 
 function progressCallback(progress) { console.log("working");console.log(progress);  }
 
-app.listen(80, function () {
+app.listen(8000, function () {
   console.log('SPOCK listening on port 3000!')
 })
 
