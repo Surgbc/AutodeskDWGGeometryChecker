@@ -1,19 +1,21 @@
-var viewer, accessToken, documentId;
+var viewer, accessToken, bucketKey, urn;
 
 var options = {
    env: 'AutodeskProduction',
    accessToken: accessToken//'E2YYjNUuvIeoRTS4DpUm2QRrq17C'
    //accessToken: 'E2YYjNUuvIeoRTS4DpUm2QRrq17C'
 };
-var documentId = 'urn:'+documentId;//dXJuOmFkc2sub2JqZWN0czpvcy5vYmplY3Q6dG1wLWJ1Y2tldC92aXN1YWxpemF0aW9uXy1fYWVyaWFsLmR3Zw
+var documentId = 'urn:'+urn;//dXJuOmFkc2sub2JqZWN0czpvcy5vYmplY3Q6dG1wLWJ1Y2tldC92aXN1YWxpemF0aW9uXy1fYWVyaWFsLmR3Zw
 //var documentId = 'urn:'+'dXJuOmFkc2sub2JqZWN0czpvcy5vYmplY3Q6dG1wLWJ1Y2tldC92aXN1YWxpemF0aW9uXy1fYWVyaWFsLmR3Zw'
 
 var popuptop;
 
 $(document).ready(function()
 {
-	console.log("adhasjdkhaskjdh");
 	init();
+	accessToken="83gKTTkWJRY6cmkDMl5q7bma8wGf"
+	urn ="dXJuOmFkc2sub2JqZWN0czpvcy5vYmplY3Q6YnVjay9IU0NSRU4uRFdH";
+	/*viewer_init();*/
 });
 
 var disabledbtns =
@@ -28,15 +30,12 @@ var disabledbtns =
 var init = function()
 {
 	unoauthed()
-	/*console.log("ready");
-	options.accessToken ='E2YYjNUuvIeoRTS4DpUm2QRrq17C';
-	documentId = 'urn:'+'dXJuOmFkc2sub2JqZWN0czpvcy5vYmplY3Q6dG1wLWJ1Y2tldC92aXN1YWxpemF0aW9uXy1fYWVyaWFsLmR3Zw'
-	*/
-	//viewer_init();
 }
 
 var viewer_init = function()
 {
+	options.accessToken =accessToken;
+	documentId = 'urn:'+urn;
 	Autodesk.Viewing.Initializer(options, function onInitialized(){
    Autodesk.Viewing.Document.load(documentId, onDocumentLoadSuccess, onDocumentLoadFailure);
    onDocumentLoadSuccess($(document));
@@ -104,6 +103,7 @@ $(".btn_class").click(function(){popuptop=$(this).offset().top;openGui($(this).h
 var openGui = function(part)
 {
 $("#popup").offset({top:popuptop});
+console.log("part");
 	switch(part)
 	{
 		case "Log in":
@@ -178,6 +178,7 @@ var openlistbuckets = function(bucketname)
 		else
 		{
 			disabledbtns.createbucket = false;
+			bucketKey = data.key;
 			$("#popup").html("<table>"+"<tr><td>Bucket</td><td>Policy</td></tr>"+"<tr><td>"+data.key+"        </td><td>"+data.policyKey+"</td></tr>"+"</table>");
 		}
 	});
@@ -195,22 +196,72 @@ var opencreatebucket = function(err)
 	if(disabledbtns.listbuckets == true){openLogin("Please log in first"); return 0;}
 	$.get( "bucketcreate.html", function( data ) {
 		$("#popup").html(data);
+		//console.log(data);
+		$("#message").html(err);
+	});
+}
+/*
+var setBucket =function (bucket)
+{
+	bucketKey = data.key;
+}
+*/
+var openuploadfile = function(err)
+{
+	if(disabledbtns.createbucket == true){opencreatebucket("Create a bucket first"); return 0;}
+	$.get( "upload.html", function( data ) {
+		$("#popup").html(data);
+		$("#popup").append('<div id="message"></div>');
 		$("#message").html(err);
 	});
 }
 
-var openuploadfile = function()
+var forgeupload= function(filename)
 {
-	if(disabledbtns.createbucket == true){showError("Create a bucket first"); return 0;}
-	$.get( "upload.html", function( data ) {
+	$.getJSON( "forgeupload?filename="+filename+"&bucket="+bucketKey+"&token="+accessToken, function( data ) {
+		if(data.statusCode != undefined)	
+		{
+		$("#popup").html('<div class="container"><div id="message"></div></form></div>');
+		$("#message").html("Error uploading file. Please try again.");
+		}
+		else
+		{
+			disabledbtns.uploadfile = false;
+			console.log(data);
+			urn = data.urn;
+			$("#popup").html('');
+			/*viewer_init();*/
+		}
+	});
+}
+
+var opentranslatefile = function()
+{
+	console.log("is translate");
+	if(disabledbtns.uploadfile == true){openuploadfile("Upload file first"); return 0;}
+	$.get( "translate.html", function( data ) {
 		$("#popup").html(data);
 	});
 }
-/*
-var opentranslatefile = function()
+
+var translatefile = function()
 {
-	if(disabledbtns.listbuckets == true){openLogin("Please log in first");}
+	$(".progress").html("Translating...");
+	$.getJSON( "translate?urn="+urn+"&token="+accessToken, function( data ) {
+		if(data.statusCode != undefined)	
+		{
+		$("#popup").html('<div class="container"><div id="message"></div></form></div>');
+		$("#message").html("Error translating file. Please try again.");
+		}
+		else
+		{
+			disabledbtns.translatefile = false;
+			$("#popup").html('');
+			viewer_init();
+		}
+	});
+	
 }
-*/
+
 //i3hLiqZHP1gGPbrzRVfq5mnAewcBjlGo
 //lpF0vshsKfHiqzR4

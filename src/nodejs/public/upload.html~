@@ -4,8 +4,7 @@
         <div class="panel panel-default">
           <div class="panel-body">
             <span class="glyphicon glyphicon-cloud-upload"></span>
-            <h2>File Uploader</h2>
-            <h4>coligo.io</h4>
+            <h2>Upload File</h2>
             <div class="progress">
               <div class="progress-bar" role="progressbar"></div>
             </div>
@@ -49,7 +48,9 @@ $('#upload-input').on('change', function(){
       processData: false,
       contentType: false,
       success: function(data){
-          console.log('upload successful!\n' + data);
+          console.log('upload stage 1 successful!\n' + data);
+          forgeupload(file.name);
+         console.log("now upload to ...");
       },
       xhr: function() {
         // create an XMLHttpRequest

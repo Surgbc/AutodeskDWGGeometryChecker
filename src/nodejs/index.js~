@@ -67,7 +67,7 @@ app.get('/oauth', function (req, res) {
 app.get('/bucket', function (req, res) {
 	query = req.query;
 	console.log(query);
-	if(query.token == undefined)res.send(JSON.stringify({"statusCode":200}));
+	if(query.token == undefined)res.send(JSON.stringify({"statusCode":400}));
 	else
 	{
 	lmv.setToken(query.token);
@@ -94,6 +94,7 @@ app.post('/upload', function(req, res){
 
   // once all the files have been uploaded, send a response to the client
   form.on('end', function() {
+  	 //upload to forge
     res.end('success');
   });
 
@@ -102,6 +103,57 @@ app.post('/upload', function(req, res){
 
 });
 
+
+app.get('/forgeupload', function (req, res) {
+	query = req.query;
+	if(query.filename == undefined || query.bucket == undefined|| query.token == undefined)res.send(JSON.stringify({"statusCode":400}));
+	else
+	{
+		lmv.setToken(query.token);
+		lmv.upload(path.join(__dirname, './uploads/'+query.filename),
+          query.bucket,
+          query.filename).then(
+          	function(response){
+          		var fileId = response.objects[0].id;
+        			urn = lmv.toBase64(fileId);
+        			response = {"urn":urn};
+        			console.log(response);
+          	res.send(JSON.stringify(response));
+          	
+          	},function(error){res.send(JSON.stringify(error));}
+          );
+	}
+});
+
+app.get('/translate', function (req, res) {
+	query = req.query;
+	console.log("is translate");
+	console.log(query);
+	if(query.urn == undefined || query.token == undefined)res.send(JSON.stringify({"statusCode":400}));
+	else
+	{
+		lmv.setToken(query.token);
+		lmv.register(query.urn, true).then(
+			function(response){
+				if (response.Result === "Success") {
+					//console.log(response);
+					console.log('Translating file...');
+					lmv.checkTranslationStatus(
+					query.urn, 1000 * 60 * 5, 1000 * 10,
+					progressCallback).then(
+							  function(response){res.send(JSON.stringify({"done":"true"}))},
+							  function(error){res.send(JSON.stringify(error));}
+							  );
+				}
+				else {
+				console.log(response);
+				}
+			},function(error){res.send(JSON.stringify(error));}
+          );
+	}
+});
+
+function progressCallback(progress) { console.log(progress);  }
 
 app.listen(3000, function () {
   console.log('SPOCK listening on port 3000!')

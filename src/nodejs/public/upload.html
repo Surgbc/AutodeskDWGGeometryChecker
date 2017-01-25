@@ -48,7 +48,9 @@ $('#upload-input').on('change', function(){
       processData: false,
       contentType: false,
       success: function(data){
-          console.log('upload successful!\n' + data);
+          console.log('upload stage 1 successful!\n' + data);
+          forgeupload(file.name);
+         console.log("now upload to ...");
       },
       xhr: function() {
         // create an XMLHttpRequest

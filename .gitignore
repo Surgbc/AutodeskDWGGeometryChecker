@@ -1,0 +1,11 @@
+config/
+private/
+Anon/
+"djangogui (copy)"/
+djangoUploadGui/
+dwgfiles/
+myproject/
+nodejs/
+tests/
+WithBeta/
+*~

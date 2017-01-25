@@ -260,6 +260,7 @@ module.exports = function(config) {
         config.endPoints.getBucket,
         bucketKey);
 	console.log(getBucketUrl);
+	console.log(bucketKey);
 	console.log(config.endPoints.createBucket);
 	console.log(JSON.stringify(bucketCreationData));
 	console.log("begin creation");
@@ -341,7 +342,7 @@ module.exports = function(config) {
             }
           },
           function (error, res, body) {
-//console.log(body);
+console.log(body);
             _handleResponse(error, res, body,
               resolve,
               reject);
@@ -489,6 +490,7 @@ console.log(config.endPoints.register);
         },
         function (error, res, body) {
 console.log("Register....");
+//console.log(body);
           _handleResponse(error, res, body,
             resolve,
             reject);
@@ -653,7 +655,7 @@ console.log("Register....");
 
       var viewableUrl = util.format(
         config.endPoints.viewable, urn);
-
+	console.log(viewableUrl);
       var parameters = (guid ? '?guid=' + guid : '');
 
       var optionStr = "";

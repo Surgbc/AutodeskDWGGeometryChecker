@@ -342,7 +342,7 @@ module.exports = function(config) {
             }
           },
           function (error, res, body) {
-//console.log(body);
+console.log(body);
             _handleResponse(error, res, body,
               resolve,
               reject);
@@ -490,6 +490,7 @@ console.log(config.endPoints.register);
         },
         function (error, res, body) {
 console.log("Register....");
+//console.log(body);
           _handleResponse(error, res, body,
             resolve,
             reject);
@@ -654,7 +655,6 @@ console.log("Register....");
 
       var viewableUrl = util.format(
         config.endPoints.viewable, urn);
-
       var parameters = (guid ? '?guid=' + guid : '');
 
       var optionStr = "";
@@ -674,7 +674,6 @@ console.log("Register....");
       }
      console.log("Is translation status");
       console.log(viewableUrl + optionStr + parameters);
-      exit();
       request.get({
           url: viewableUrl + optionStr + parameters,
           headers: {
