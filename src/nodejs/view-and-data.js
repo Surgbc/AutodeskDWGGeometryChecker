@@ -548,12 +548,12 @@ console.log("Register....");
           body: JSON.stringify({urn: urn})
         },
         function (error, res, body) {
+        //	console.log(body);
           _handleResponse(error, res, body,
             resolve,
             reject);
         });
     });
-
     return promise;
   }
 
