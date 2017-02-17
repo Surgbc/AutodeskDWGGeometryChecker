@@ -1,5 +1,11 @@
 var viewer, accessToken, bucketKey, urn, guid;
 
+var objectids = [];
+
+var objectidstring;
+
+var tmpstr ;/*= '[ { "objectid": 2, "name": "Model", "objects": [ { "objectid": 238, "name": "3D Solids (12)", "objects": [ { "objectid": 237, "name": "3D Solid (12)", "objects": [ { "objectid": 187, "name": "Solid [7DF]" }, { "objectid": 188, "name": "Solid [7E0]" }, { "objectid": 189, "name": "Solid [7E1]" }, { "objectid": 190, "name": "Solid [7E2]" }, { "objectid": 191, "name": "Solid [7E3]" }, { "objectid": 192, "name": "Solid [7E4]" }, { "objectid": 193, "name": "Solid [7E9]" }, { "objectid": 194, "name": "Solid [7EA]" }, { "objectid": 213, "name": "Solid [80E]" }, { "objectid": 214, "name": "Solid [80F]" }, { "objectid": 215, "name": "Solid [810]" }, { "objectid": 216, "name": "Solid [811]" } ] } ] } ] } ]';*/
+
 var options = {
    env: 'AutodeskProduction',
    accessToken: accessToken//'E2YYjNUuvIeoRTS4DpUm2QRrq17C'
@@ -18,6 +24,28 @@ $(document).ready(function()
 	guid="none";
 	/*viewer_init();*/
 });
+
+var tryal = function()
+{
+	console.log(tmpstr);
+	var tmp = JSON.parse(tmpstr);
+	//tmp = tmp[0];
+	//console.log(tmp);
+	retobid(tmp);
+	console.log(objectids);
+	objectidstring = JSON.stringify(objectids);
+	console.log(objectidstring);
+	$("#popup").html(objectidstring);
+}
+
+var retobid = function(obj)
+{
+	$.each(obj, function(key,val){
+		//console.log(key+" >"+val)
+		objectids.push(val.objectid);
+		if(val.objects != undefined)retobid(val.objects);
+	});
+}
 
 var disabledbtns =
 {
@@ -300,8 +328,9 @@ var objecttree = function()
 		console.log(data);
 		str = JSON.stringify(data, null, 4);
 		$("#popup").html(str);
+		tmpstr = str
 		disabledbtns.objecttree = false;
-		iguid = data["guid"];	//assume no error
+		tryal();
 	});
 	
 }
