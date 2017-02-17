@@ -197,7 +197,7 @@ app.get('/objecttree', function (req, res) {
 
 function progressCallback(progress) { console.log("working");console.log(progress);  }
 
-var port = 80;
+var port = 1880;
 app.listen(port, function () {
   console.log('SPOCK listening on port '+port+'!');
 })

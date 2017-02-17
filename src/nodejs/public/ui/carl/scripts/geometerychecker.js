@@ -121,6 +121,9 @@ console.log(part);
 		case "Translate File":
 			opentranslatefile();
 			break;
+		case "Get Guid":
+			getguid();
+			break;
 		case "Hide Popup":
 			$("#popup").html("");
 			break;
@@ -259,6 +262,16 @@ var translatefile = function()
 			$("#popup").html('');
 			viewer_init();
 		}
+	});
+	
+}
+
+var getuid = function()
+{
+	$(".progress").html("Getting guid...");
+	if(disabledbtns.translatefile == true){opentranslatefile(); return 0;}
+	$.get( "modelview?urn="+urn+"&token="+accessToken, function( data ) {
+		$("#popup").html(data);
 	});
 	
 }
