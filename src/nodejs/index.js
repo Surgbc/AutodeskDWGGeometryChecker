@@ -171,7 +171,10 @@ app.get('/modelview', function (req, res) {
 				if(response == undefined)res.send(JSON.stringify({"statusCode":404}));
 				var guid = response[0].guid;
 				console.log("guid:"+guid);
-				res.send(JSON.stringify(response[0]));
+				//res.send(JSON.stringify(response[0]));
+				//res.send(response[0]);
+				res.send({"guid":guid});
+				//console.log(response[0]);
 			},function(error){res.send(JSON.stringify(error));}
           );
 	}
@@ -189,7 +192,10 @@ app.get('/objecttree', function (req, res) {
 			function(response){
 				if(response.data.objects == undefined)res.send(JSON.stringify({"statusCode":400}));
 				console.log(JSON.stringify(response.data.objects));
-				res.send(JSON.stringify(response.data.objects));
+				//res.send(JSON.stringify(response.data.objects));
+				res.send(response.data.objects);
+				console.log(response.data.objects);
+				console.log("is end of guid");
 			},function(error){res.send(JSON.stringify(error));}
           );
 	}

@@ -1,4 +1,4 @@
-var viewer, accessToken, bucketKey, urn;
+var viewer, accessToken, bucketKey, urn, guid;
 
 var options = {
    env: 'AutodeskProduction',
@@ -13,18 +13,21 @@ var popuptop;
 $(document).ready(function()
 {
 	init();
-	accessToken="83gKTTkWJRY6cmkDMl5q7bma8wGf"
+	accessToken="83gKTTkWJRY6cmkDMl5q7bma8wGf";
 	urn ="dXJuOmFkc2sub2JqZWN0czpvcy5vYmplY3Q6YnVjay9IU0NSRU4uRFdH";
+	guid="none";
 	/*viewer_init();*/
 });
 
 var disabledbtns =
 {
-	"login":false,
-	"listbuckets":false,
-	"createbucket":false,
-	"uploadfile":false,
-	"translatefile":false
+	"login":true,
+	"listbuckets":true,
+	"createbucket":true,
+	"uploadfile":true,
+	"translatefile":true,
+	"getguid":true,
+	"objecttree":true
 }
 
 var init = function()
@@ -124,6 +127,9 @@ console.log(part);
 		case "Get Guid":
 			getguid();
 			break;
+		case "Object Tree":
+			objecttree();
+			break;
 		case "Hide Popup":
 			$("#popup").html("");
 			break;
@@ -141,10 +147,13 @@ var openLogin = function(err)
 
 var unoauthed = function()
 {
+	disabledbtns.login = true;
 	disabledbtns.listbuckets = true;
 	disabledbtns.createbucket = true;
 	disabledbtns.uploadfile = true;
 	disabledbtns.translatefile = true;
+	disabledbtns.getguid = true;
+	disabledbtns.objecttree = true;
 }
 
 var oauth = function(id, secret)
@@ -266,12 +275,33 @@ var translatefile = function()
 	
 }
 
-var getguid = function()
+var getguid = function(err)
 {
-	$(".progress").html("Getting guid...");
+	$("#popup").html("Getting guid...");
 	if(disabledbtns.translatefile == true){opentranslatefile(); return 0;}
+	if(err != undefined){$("#popup").html(err);return 0;}
+	console.log("Getting guid");
 	$.get( "modelview?urn="+urn+"&token="+accessToken, function( data ) {
-		$("#popup").html(data);
+		//$("#popup").html(data);
+		$("#popup").html('');
+		disabledbtns.getguid = false;
+		guid = data.guid;	//assume no error
+		console.log(data);
+		console.log(data.guid);
+	});
+	
+}
+var objecttree = function()
+{
+	$("#popup").html("Getting object tree...");
+	if(disabledbtns.getguid == true){getguid("Get guid first"); return 0;}
+	$.get( "objecttree?urn="+urn+"&token="+accessToken+"&guid="+guid, function( data ) {
+		//$("#popup").html(data);
+		console.log(data);
+		str = JSON.stringify(data, null, 4);
+		$("#popup").html(str);
+		disabledbtns.objecttree = false;
+		iguid = data["guid"];	//assume no error
 	});
 	
 }
