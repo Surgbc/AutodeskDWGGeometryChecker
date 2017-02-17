@@ -266,7 +266,7 @@ var translatefile = function()
 	
 }
 
-var getuid = function()
+var getguid = function()
 {
 	$(".progress").html("Getting guid...");
 	if(disabledbtns.translatefile == true){opentranslatefile(); return 0;}
