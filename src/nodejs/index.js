@@ -203,6 +203,26 @@ app.get('/objecttree', function (req, res) {
 
 function progressCallback(progress) { console.log("working");console.log(progress);  }
 
+app.get('/objfile', function (req, res) {
+	query = req.query;
+	console.log("is objfile");
+	console.log(query);
+	if(query.urn == undefined || query.token == undefined || query.guid == undefined || query.ids == undefined)res.send(JSON.stringify({"statusCode":400}));
+	else
+	{
+		lmv.setToken(query.token);
+		lmv.objfile(query.urn, query.guid, query.ids).then(
+			function(response){
+				if(response.data.objects == undefined)res.send(JSON.stringify({"statusCode":400}));
+				console.log(JSON.stringify(response));
+				res.send(response);
+				console.log(response);
+				console.log("is end of objfile");
+			},function(error){res.send(JSON.stringify(error));}
+          );
+	}
+});
+
 var port = 1880;
 app.listen(port, function () {
   console.log('SPOCK listening on port '+port+'!');

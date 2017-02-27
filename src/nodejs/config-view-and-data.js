@@ -55,7 +55,8 @@ module.exports = {
     thumbnail:        BASE_URL + '/viewingservice/' + VERSION + '/thumbnails/%s',
     viewable:         BASE_URL + '/viewingservice/' + VERSION + '/%s',
     items:            BASE_URL + '/viewingservice/' + VERSION + '/items/%s',
-    modelView:			 BASE_URL + '/modelderivative/'+ 'v2'    + '/designdata/%s/metadata',
-    objectTree:		 BASE_URL + '/modelderivative/'+ 'v2'    + '/designdata/%s/metadata/%s'
+    modelView:				BASE_URL + '/modelderivative/'+ 'v2'    + '/designdata/%s/metadata',
+    objectTree:		 		BASE_URL + '/modelderivative/'+ 'v2'    + '/designdata/%s/metadata/%s',
+    objfile:					BASE_URL + '/modelderivative/'+ 'v2'    + '/designdata/job',
   }
 }

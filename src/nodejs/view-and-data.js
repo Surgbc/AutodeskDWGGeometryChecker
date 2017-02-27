@@ -557,7 +557,46 @@ console.log("Register....");
     return promise;
   }
 
+   ///////////////////////////////////////////////////////////////////
+  //
+  //
+  ///////////////////////////////////////////////////////////////////
+  _self.objfile = function(urn, guidStr, objids) {
 
+    var params = {
+      input: {"urn": },
+      output: "formats": [
+       {
+         "type": "obj"
+         "advanced": {
+           "modelGuid":guidStr,
+           "objectIds":objids
+        }
+
+     }]
+    };
+    console.log(config.endPoints.objfile);
+    console.log(JSON.stringify(params));
+    var promise = new Promise(function(resolve, reject) {
+      request.post({
+                url: config.endPoints.objfile,
+                headers: {
+                  'Authorization': 'Bearer ' + _token,
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(params)
+               // form: params 
+               },
+        function (error, res, body) {
+			console.log(body);
+         _handleResponse(error, res, body,
+            resolve,
+            reject);
+        });
+    });
+
+    return promise;
+  }
   ///////////////////////////////////////////////////////////////////
   // Use:
   // Get model thumbnail
