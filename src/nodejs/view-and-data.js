@@ -565,7 +565,7 @@ console.log("Register....");
 
     var params = {
       input: {"urn": urn},
-      output: "formats": [
+      output: {"formats": [
        {
          "type": "obj"
          "advanced": {
@@ -573,7 +573,7 @@ console.log("Register....");
            "objectIds":objids
         }
 
-     }]
+     }]}
     };
     console.log(config.endPoints.objfile);
     console.log(JSON.stringify(params));
