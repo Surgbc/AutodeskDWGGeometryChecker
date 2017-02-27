@@ -564,7 +564,7 @@ console.log("Register....");
   _self.objfile = function(urn, guidStr, objids) {
 
     var params = {
-      input: {"urn": },
+      input: {"urn": urn},
       output: "formats": [
        {
          "type": "obj"
