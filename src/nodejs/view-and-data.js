@@ -567,7 +567,7 @@ console.log("Register....");
       input: {"urn": urn},
       output: {"formats": [
        {
-         "type": "obj"
+         "type": "obj",
          "advanced": {
            "modelGuid":guidStr,
            "objectIds":objids
