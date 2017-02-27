@@ -36,6 +36,7 @@ var tryal = function()
 	objectidstring = JSON.stringify(objectids);
 	console.log(objectidstring);
 	$("#popup").html(objectidstring);
+	tmpstr = objectidstring;
 }
 
 var retobid = function(obj)
@@ -55,7 +56,8 @@ var disabledbtns =
 	"uploadfile":true,
 	"translatefile":true,
 	"getguid":true,
-	"objecttree":true
+	"objecttree":true,
+	"objectfile":true
 }
 
 var init = function()
@@ -158,6 +160,9 @@ console.log(part);
 		case "Object Tree":
 			objecttree();
 			break;
+		case "Object File":
+			objectfile();
+			break;
 		case "Hide Popup":
 			$("#popup").html("");
 			break;
@@ -182,6 +187,7 @@ var unoauthed = function()
 	disabledbtns.translatefile = true;
 	disabledbtns.getguid = true;
 	disabledbtns.objecttree = true;
+	disabledbtns.objectfile = true;
 }
 
 var oauth = function(id, secret)
@@ -331,6 +337,17 @@ var objecttree = function()
 		tmpstr = str
 		disabledbtns.objecttree = false;
 		tryal();
+	});
+	
+}
+
+var objectfile = function()
+{
+	$("#popup").html("Getting object file...");
+	if(disabledbtns.objecttree == true){getguid("Get object tree"); return 0;}
+
+	$.get( "objfile?urn="+urn+"&token="+accessToken+"&guid="+guid+"&ids="+tmpstr, function( data ) {
+		console.log(data);
 	});
 	
 }
