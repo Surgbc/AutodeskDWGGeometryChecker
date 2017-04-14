@@ -48,7 +48,7 @@ module.exports = function(config) {
     reject) {
 
 
-    if (error || res.statusCode != 200) {
+    if (error || (res.statusCode != 200  && res.statusCode != 201)) {
 
       try {
 
@@ -562,7 +562,7 @@ console.log("Register....");
   //
   ///////////////////////////////////////////////////////////////////
   _self.objfile = function(urn, guidStr, objids) {
-
+console.log("is start");
     var params = {
       input: {"urn": urn},
       output: {"formats": [
@@ -575,8 +575,10 @@ console.log("Register....");
 
      }]}
     };
+   console.log("is params");
     console.log(config.endPoints.objfile);
     console.log(JSON.stringify(params));
+    console.log(params);
     var promise = new Promise(function(resolve, reject) {
       request.post({
                 url: config.endPoints.objfile,
@@ -588,6 +590,34 @@ console.log("Register....");
                // form: params 
                },
         function (error, res, body) {
+		console.log("is error");	console.log(body); console.log(error);
+         _handleResponse(error, res, body,
+            resolve,
+            reject);
+        });
+    });
+
+    return promise;
+  }
+///////////////////////////////////////////////////////////////////
+  //
+  //
+  ///////////////////////////////////////////////////////////////////
+  _self.objfileprogress = function(guidStr) {
+
+    var objectfileprogressUrl = util.format(
+        config.endPoints.manifest, guidStr);
+console.log(objectfileprogressUrl);
+    var promise = new Promise(function(resolve, reject) {
+		
+      request.get({
+          url: objectfileprogressUrl,
+          headers: {
+            'Authorization': 'Bearer ' + _token,
+            'Content-Type': 'application/json'
+          },
+        },
+        function (error, res, body) {
 			console.log(body);
          _handleResponse(error, res, body,
             resolve,
@@ -597,6 +627,87 @@ console.log("Register....");
 
     return promise;
   }
+
+//////////////////////////////////////////////////////////////
+//
+//////////////////////////////////////////////////////////
+  _self.objfileproperties = function(urnStr, guidStr) {
+
+    var propertiesUrl = util.format(
+        config.endPoints.properties, urnStr, guidStr);
+console.log(propertiesUrl);
+    var promise = new Promise(function(resolve, reject) {
+
+      request.get({
+          url: propertiesUrl,
+          headers: {
+            'Authorization': 'Bearer ' + _token,
+            'Content-Type': 'application/json'
+          },
+        },
+        function (error, res, body) {
+                        console.log(body);
+         _handleResponse(error, res, body,
+            resolve,
+            reject);
+        });
+    });
+
+    return promise;
+  }
+
+
+
+  ///////////////////////////////////////////////////////////////////
+  //
+  ///////////////////////////////////////////////////////////////////
+  
+  
+   _self.objfiledownload = function(urn, newurn) {
+	var objfiledownloadUrl = util.format(
+        config.endPoints.objdownload, urn, newurn);
+        console.log(objfiledownloadUrl);
+    var promise = new Promise(function(resolve, reject) {
+		
+      request.get({
+          url: objfiledownloadUrl,
+          headers: {
+            'Authorization': 'Bearer ' + _token,
+            'Content-Type': 'application/json'
+          }
+        },
+        function (error, res, body) {
+        //console.log(body);//checkdown 
+	 /*_handleResponse(error, res, body,
+            resolve,
+            reject);*/
+
+
+try
+{
+ if(error || res.statusCode != 200){
+  error = error || {error: res.statusMessage || 'undefined'};
+ error.statusCode = res.statusCode;
+ reject(error);
+}
+else
+{
+resolve(body);
+}
+
+}
+catch(ex)
+{
+reject({error:ex});
+}
+
+
+        });
+    });
+
+    return promise;
+  }
+
   ///////////////////////////////////////////////////////////////////
   // Use:
   // Get model thumbnail

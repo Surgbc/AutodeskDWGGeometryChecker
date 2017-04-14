@@ -1,7 +1,7 @@
 var Promise = require('promise');
 var express = require('express');
 var app = express();
-
+var mkdirp = require("mkdirp");
 var should = require('chai').should(),
 Lmv = require('./view-and-data'),
 path = require('path'),
@@ -47,8 +47,8 @@ var connection = mysql.createConnection({
 var options = {
   index: "home.html"
 };
-app.use('/', express.static('public', options));
-
+app.use(express.static('public', options));
+app.use(express.static('uploads'));
 
 app.get('/', function (req, res) {
 	res.send("Fetching page");
@@ -163,11 +163,13 @@ app.get('/modelview', function (req, res) {
 	if(query.urn == undefined || query.token == undefined)res.send(JSON.stringify({"statusCode":400}));
 	else
 	{
+	
 		lmv.setToken(query.token);
-		lmv.modelView(query.urn, true).then(
+		tmp = query.urn.replace("==",""); tmp = query.urn.replace("=","");
+		lmv.modelView(tmp, true).then(
 			function(response){
-				response = response.data;
-				response = response.metadata;
+				response = response.data;console.log(response);
+				response = response.metadata;console.log(response);
 				if(response == undefined)res.send(JSON.stringify({"statusCode":404}));
 				var guid = response[0].guid;
 				console.log("guid:"+guid);
@@ -207,23 +209,147 @@ app.get('/objfile', function (req, res) {
 	query = req.query;
 	console.log("is objfile");
 	console.log(query);
+console.log(query.ids);
 	if(query.urn == undefined || query.token == undefined || query.guid == undefined || query.ids == undefined)res.send(JSON.stringify({"statusCode":400}));
 	else
 	{
 		lmv.setToken(query.token);
-		lmv.objfile(query.urn, query.guid, query.ids).then(
+		lmv.objfile(query.urn, query.guid, JSON.parse(query.ids)).then(
 			function(response){
-				if(response.data.objects == undefined)res.send(JSON.stringify({"statusCode":400}));
+console.log("is here");
+				if(response.result == undefined)res.send(JSON.stringify({"statusCode":400}));
+console.log("is here 1");
 				console.log(JSON.stringify(response));
-				res.send(response);
+
+				
+
 				console.log(response);
-				console.log("is end of objfile");
-			},function(error){res.send(JSON.stringify(error));}
+
+				console.log("is end of objfile");//objfileprogress
+				lmv.objfileprogress( query.urn ).then(function(response){res.send(response);}, function(error){res.send(JSON.stringify(error));}) 
+				
+				},function(error){res.send(JSON.stringify(error));}
           );
 	}
 });
 
-var port = 1880;
+app.get('/objfileprogress', function (req, res) {
+
+	query = req.query;
+
+	console.log("is objfileprogress");
+
+	console.log(query);
+
+	if(query.urn == undefined || query.token == undefined)res.send(JSON.stringify({"statusCode":400}));
+
+	else
+
+	{
+
+		lmv.setToken(query.token);
+
+		lmv.objfileprogress( query.urn ).then(function(response){res.send(response);}, function(error){res.send(JSON.stringify(error));}) 
+
+	}
+
+});
+
+
+app.get('/objfiledownload', function (req, res) {
+
+	query = req.query;
+
+	console.log(query);
+
+	if(query.urn == undefined || query.token == undefined || query.newurn == undefined )res.send(JSON.stringify({"statusCode":400}));
+
+	else
+
+	{
+console.log(query.newurn);
+console.log(encodeURIComponent(query.newurn));
+tmp = query.urn;
+console.log(tmp);
+tmp = tmp.substring(0, tmp.length-2);
+console.log(tmp);
+lmv.objfiledownload( tmp/*query.urn*/, encodeURIComponent(query.newurn) ).then(function(response)
+{
+//console.log(response);
+var fullFilename = "tmp.mtl";
+console.log(fullFilename);
+/*mkdirp (path.dirname(fullFileName), function(error)
+{
+console.log("dir created");
+	if(error){console.log("error occured");res.send(JSON.stringify(error));}
+	else
+	{
+console.log("writing to file");
+fs.writeFile(fullFileName, data, function(error){res.send(JSON.stringify(error));});
+	}
+}
+);*/
+fs.writeFile('uploads/tmp.mtl'/*+encodeURIComponent(query.newurn)*/, response, (error)=>{
+if(error)res.send(JSON.stringify(error));
+console.log("saved");
+});
+res.send(response);
+}, function(error){res.send(JSON.stringify(error));}) 
+
+	}
+
+});
+//---------
+app.get('/properties', function (req, res) {
+        query = req.query;
+        console.log("is properties");
+        console.log(query);
+        if(query.urn == undefined || query.token == undefined ||query.guid == undefined)res.send(JSON.stringify({"statusCode":400}));
+        else
+        {
+               lmv.setToken(query.token);
+ lmv.objfileproperties( query.urn, query.guid ).then(function(response){console.log(JSON.stringify(response.data.collection));
+tmp = response.data.collection;
+console.log(tmp.length);
+var len = tmp.length;
+var i;
+var tmpstr;
+var strfin='';
+for(i=0;i<len;i++)
+{
+console.log("********************");
+	tmpstr = "";
+	tmpi = tmp[i];
+	tmpstr= tmpi.objectid;
+	tmpstr +=','+tmpi.name;
+console.log("-----------------------------");
+//console.log(tmpi.properties);
+//console.log(tmpi.properties);
+	if(tmpi.properties != undefined)
+	{
+		if(tmpi.properties.Geometry != undefined)tmpstr +=','+tmpi.properties.Geometry.Area;
+		if(tmpi.properties.Geometry != undefined)tmpstr +=','+tmpi.properties.Geometry.Elevation;
+	}else tmpstr += ',,';
+//	tmp.Geometry != undefined?tmpstr +=','+tmpi.Geometry.Elevation:false;
+//	console.log(i);
+//	console.log(tmpi);
+console.log(tmpstr);
+strfin += tmpstr+"\n\r";
+}
+console.log(strfin);
+fs.writeFile('uploads/dat.csv', strfin, (error)=>{
+if(error)res.send(JSON.stringify(error));
+console.log("saved");
+});
+
+res.send(response.data.collection);}, function(error){res.send(JSON.stringify(error));}) 
+
+        }
+});
+
+
+//-------
+var port = 80;//1880;
 app.listen(port, function () {
   console.log('SPOCK listening on port '+port+'!');
 })
@@ -292,3 +418,5 @@ function bucket(bucket)
 	);
 	return promise;
 }
+
+

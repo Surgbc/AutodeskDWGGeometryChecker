@@ -58,5 +58,9 @@ module.exports = {
     modelView:				BASE_URL + '/modelderivative/'+ 'v2'    + '/designdata/%s/metadata',
     objectTree:		 		BASE_URL + '/modelderivative/'+ 'v2'    + '/designdata/%s/metadata/%s',
     objfile:					BASE_URL + '/modelderivative/'+ 'v2'    + '/designdata/job',
+    manifest:					BASE_URL + '/modelderivative/'+ 'v2'		+ '/designdata/%s/manifest',
+    objdownload:	BASE_URL + '/modelderivative/'+ 'v2'		+ '/designdata/%s/manifest/%s',
+    properties:		BASE_URL + '/modelderivative/' + 'v2' + '/designdata/%s/metadata/%s/properties'
+
   }
 }
